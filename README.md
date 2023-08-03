@@ -2,12 +2,12 @@
 A development/testing/cyber-range environment. The intended end goal is to have an independent environment that can be used to test tools, tactics and procedures. The domain will include diverse operating systems, applications and services that can be spun up and destroyed with little effort. The goal is to have a solution that will be consistent, reliable and repeatable.    
 
 ## RoadMap (In Progress)
-[ ] End-goal network diagram.
-[ ] Current network diagram.
-[ ] Terraform code to crate infra on esxi.
-[ ] Packer code to create VMware images.
-[ ] Create scripts using suitable solutions to install services and applications on images.
-[ ] Add more to the to-do list...
+- End-goal network diagram.
+- Current network diagram.
+- Terraform code to crate infra on esxi.
+- Packer code to create VMware images.
+- Create scripts using suitable solutions to install services and applications on images.
+- Add more to the to-do list...
 
 
 ## More defined plan
