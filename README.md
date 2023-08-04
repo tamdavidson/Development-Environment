@@ -34,6 +34,8 @@ I want to use Terraform and use Infra as code to create the underlying structure
 
 I was looking at the image creation. This I currently where I am stuck. I know I want to use Packer, but I also wish for the ISO to be stored remotely on the ESXi server. There is already a workaround for this, as other users in the past have had the same issue, which is resolved [here](https://github.com/hashicorp/packer/issues/7306#issuecomment-471004518). Creating VMware images for all my OS's in the end-game network diagram will be a massive feat. The sensible thing will be to start small with a Windows server image and maybe Windows 10 and Windows 7 images, then work up from there. Once I have one or two of these images, it will become a lot of copy & paste. There are some considerations I have that I will have to research. If that's okay with you, I will go ahead and list them below and update them when I have a solution. I might even make them issues. 
 
+I have worked on and modified the repo [ eaksel // packer-Win2022](https://github.com/eaksel/packer-Win2022). This repo seems to work, and I could use it to create an image on the ESXi server. i have modified it for my own use and will continue to do so until i can get it how i want it to work, such as having the ISO contain in the ESXi server and the image have a basic configuration.
+
 - windows update, roll back and select certain versions. builds
 - out-of-support OS
 - will the stored ISO ever get outdated?
@@ -50,6 +52,7 @@ unsure what I will use to install applications & services on the images will upd
 
 ## Acknowledgments
 - [josenk // terraform-provider-esxi](https://github.com/josenk/terraform-provider-esxi.git)
+- [ eaksel // packer-Win2022](https://github.com/eaksel/packer-Win2022)
 
 
   
