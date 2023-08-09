@@ -1,0 +1,8 @@
+# Cache objects
+packer_cache/
+output-vmware-iso/
+
+
+# Variable files
+secrets.pkrvars.hcl
+variables.pkrvars.hcl
