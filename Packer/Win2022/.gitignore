@@ -6,3 +6,6 @@ output-vmware-iso/
 # Variable files
 secrets.pkrvars.hcl
 variables.pkrvars.hcl
+
+#output files
+output-win2022_base/

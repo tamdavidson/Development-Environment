@@ -1,9 +1,19 @@
 ################################################
 # R&D servers terraform deployed test
 ################################################
+#
+#   Use of variables here to hide/move the variables to a separate file
+#
+provider "esxi" {
+  esxi_hostname = var.esxi_hostname
+  esxi_hostport = var.esxi_hostport
+  esxi_hostssl  = var.esxi_hostssl
+  esxi_username = var.esxi_username
+  esxi_password = var.esxi_password
+}
 
 #####
-# create vswitch that port group will connect to
+# Resource Virtual Switch - will be used to connect to the internet during provision stage
 #####
 resource "esxi_vswitch" "deployed-vswitch" {
   name = "deployed-vswitch"
@@ -13,8 +23,7 @@ resource "esxi_vswitch" "deployed-vswitch" {
 }
 
 #####
-# create port group that VMs will connect to
-# this is a virtual network for resources
+# Resource port group - will be connected to the switch above
 #####
 
 resource "esxi_portgroup" "deployed-portgroup" {
@@ -23,241 +32,40 @@ resource "esxi_portgroup" "deployed-portgroup" {
 
 }
 
-#####
-# create VM guest with local (esxi host) OVF/OVA file
-#####
-
-###
-# Domain Controller VM ( OS to be specified )
-###
-
-resource "esxi_guest" "deployed-vm-001-DCC" {
-  
-  #required configuration
-  guest_name = "deployed-vm-001-DC"
+####
+# Resource Esxi_Guest - Windows Server 2022
+####
+resource "esxi_guest" "Windows_Server_2022" {
+  count = var.win2022_count 
+  guest_name = "${var.vm_name_prefix}_win2022_${count.index}"
   disk_store = "datastore1"
-  
-  #optional configuration
-  power = "off"
-
+  numvcpus = 2
+  memsize = 2048
+  #local ovf stored in Development-enviroment folder // relative or absolute 
+  ovf_source = "..\\Packer\\Win2022\\output-win2022_base\\Win2022_20324_test.ovf"
+  power = "on"
+  #connect to virtual switch  
   network_interfaces {
     virtual_network = esxi_portgroup.deployed-portgroup.name
+    nic_type = "e1000e"
+  }
+}
+####
+# Resource Esxi_Guest - Windows 10 Host
+####
+resource "esxi_guest" "Windows_10" {
+  count = var.win10_count
+  guest_name = "${var.vm_name_prefix}_win10_${count.index}"
+  disk_store = "datastore1"
+  numvcpus = 2
+  memsize = 2048
+  #local ovf stored in Development-enviroment folder // relative or absolute 
+  ovf_source = "..\\Packer\\Win10\\output-Win10_base\\Win10_1809.ovf"
+  power = "on"
+  #connect to virtual switch  
+  network_interfaces {
+    virtual_network = esxi_portgroup.deployed-portgroup.name
+    nic_type = "e1000e"
   }
 }
 
-###
-# Windows 11 VM
-###
-
-resource "esxi_guest" "deployed-vm-002-WIN11" {
-
-  #required configuration
-  guest_name = "deployed-vm-002-WIN11"
-  disk_store = "datastore1"
-
-  #optional configuration
-  power = "off"
-
-  network_interfaces {
-    virtual_network = esxi_portgroup.deployed-portgroup.name
-  }
-}
-
-###
-# Windows 10 VM
-###
-
-resource "esxi_guest" "deployed-vm-003-WIN10" {
-
-  #required configuration
-  guest_name = "deployed-vm-003-WIN10"
-  disk_store = "datastore1"
-  
-  #optional configuration
-  power = "off"
-  
-  network_interfaces {
-    virtual_network = esxi_portgroup.deployed-portgroup.name
-  }
-  
-}
-
-###
-# Windows 7 VM
-###
-
-resource "esxi_guest" "deployed-vm-004-WIN7" {
-
-  #required configuration
-  guest_name = "deployed-vm-004-WIN7"
-  disk_store = "datastore1"
-
-  #optional configuration
-  power = "off"
-
-  network_interfaces {
-    virtual_network = esxi_portgroup.deployed-portgroup.name
-  }
-}
-
-###
-# Windows XP VM
-###
-
-resource "esxi_guest" "deployed-vm-005-WINXP" {
-
-  #required configuration
-  guest_name = "deployed-vm-005-WINXP"
-  disk_store = "datastore1"
-
-  #optional configuration
-  power = "off"
-  
-  network_interfaces {
-    virtual_network = esxi_portgroup.deployed-portgroup.name
-  }
-}
-
-###
-# Ubuntu (LINUX) VM
-###
-
-resource "esxi_guest" "deployed-vm-006-ubuntu" {
-
-  #required configuration
-  guest_name = "deployed-vm-006-ubuntu"
-  disk_store = "datastore1"
-
-  #optional configuration
-  power = "off"
-  
-  network_interfaces {
-    virtual_network = esxi_portgroup.deployed-portgroup.name
-  }
-}
-
-###
-# Centos OS VM
-###
-
-resource "esxi_guest" "deployed-vm-007-Centos" {
-
-  #required configuration
-  guest_name = "deployed-vm-007-Centos"
-  disk_store = "datastore1"
-
-  #optional configuration
-  power = "off"
-  
-  network_interfaces {
-    virtual_network = esxi_portgroup.deployed-portgroup.name
-  }
-}
-
-###
-# Windows Server 2012 VM
-###
-
-resource "esxi_guest" "deployed-vm-008-WINSRV12" {
-
-  #required configuration
-  guest_name = "deployed-vm-008-WINSRV12"
-  disk_store = "datastore1"
-
-  #optional configuration
-  power = "off"
-  
-  network_interfaces {
-    virtual_network = esxi_portgroup.deployed-portgroup.name
-  }
-}
-
-###
-# Windows Server 2016 VM 
-###
-
-resource "esxi_guest" "deployed-vm-009-WINSRV16" {
-
-  #required configuration
-  guest_name = "deployed-vm-009-WINSRV16"
-  disk_store = "datastore1"
-
-  #optional configuration
-  power = "off"
-  
-  network_interfaces {
-    virtual_network = esxi_portgroup.deployed-portgroup.name
-  }
-}
-
-###
-# Windows Server 2019 VM 
-###
-
-resource "esxi_guest" "deployed-vm-010-WINSRV19" {
-
-  #required configuration
-  guest_name = "deployed-vm-010-WINSRV19"
-  disk_store = "datastore1"
-
-  #optional configuration
-  power = "off"
-  
-  network_interfaces {
-    virtual_network = esxi_portgroup.deployed-portgroup.name
-  }
-}
-
-###
-# Velociraptor Server VM 
-###
-
-resource "esxi_guest" "deployed-vm-011-VELO" {
-
-  #required configuration
-  guest_name = "deployed-vm-011-VELO"
-  disk_store = "datastore1"
-
-  #optional configuration
-  power = "off"
-  
-  network_interfaces {
-    virtual_network = esxi_portgroup.deployed-portgroup.name
-  }
-}
-
-###
-# DFIR TCD VM 
-###
-
-resource "esxi_guest" "deployed-vm-012-DFIR" {
-
-  #required configuration
-  guest_name = "deployed-vm-012-DFIR"
-  disk_store = "datastore1"
-
-  #optional configuration
-  power = "off"
-  
-  network_interfaces {
-    virtual_network = esxi_portgroup.deployed-portgroup.name
-  }
-}
-
-###
-# Firewall VM 
-###
-
-resource "esxi_guest" "deployed-vm-013-FW" {
-
-  #required configuration
-  guest_name = "deployed-vm-013-FW"
-  disk_store = "datastore1"
-
-  #optional configuration
-  power = "off"
-  
-  network_interfaces {
-    virtual_network = esxi_portgroup.deployed-portgroup.name
-  }
-}

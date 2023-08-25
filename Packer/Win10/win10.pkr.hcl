@@ -73,12 +73,12 @@ variable "disk_size" {
 
 variable "iso_checksum" {
   type    = string
-  default = "38D093AE08BF80302B900BC91A2CE5205C5086DDEEFAB29E8D529D5607B6B4DB"
+  default = "A38ACC057A814CAEE49753535620362AF20EED42DD8ECADAD69F7ACF414AF2C5"
 }
 
 variable "iso_url" {
   type    = string
-  default = "C:/Users/Thoma/Downloads/Win10_22H2_EnglishInternational_x32v1.iso"
+  default = "https://go.microsoft.com/fwlink/p/?LinkID=2208844&clcid=0x809&culture=en-gb&country=GB"
 }
 
 variable "memsize" {
@@ -107,21 +107,19 @@ variable "winrm_username" {
 }
 
 
-source "vmware-iso" "Win10_base" {
+source "vmware-iso" "win10_base" {
   boot_wait        = "${var.boot_wait}"
   communicator     = "winrm"
   disk_size        = "${var.disk_size}"
-  
-  
   floppy_files     = ["scripts/bios/autounattend.xml"]
   guest_os_type    = "windows9-64"
   headless         = false
-  http_directory   = "http"
   iso_checksum     = "${var.iso_checksum}"
   iso_url          = "${var.iso_url}"
   shutdown_command = "shutdown /s /t 5 /f /d p:4:1 /c \"Packer Shutdown\""
   shutdown_timeout = "30m"
-
+  network_adapter_type   = "E1000e"
+  network_name           = "VM Network"
   vm_name          = "${var.vm_name}"
   vmx_data = {
     memsize             = "${var.memsize}"
@@ -134,7 +132,7 @@ source "vmware-iso" "Win10_base" {
   winrm_timeout  = "4h"
   winrm_use_ssl  = true
   winrm_username = "${var.winrm_username}"
-
+  insecure_connection    = true
 // remote variables
   remote_cache_datastore  = "${var.esxi_datastore}"
   remote_cache_directory  = "${var.esxi_iso_directory}"
@@ -145,7 +143,9 @@ source "vmware-iso" "Win10_base" {
   remote_type             = "${var.esxi_type}"
   remote_username         = "${var.esxi_username}"
   remote_output_directory = "${var.esxi_output_directory}"
-  skip_export          = true
+  skip_export          = false
+  keep_registered      = true
+  format               = "ovf"
   vnc_disable_password = true
   vnc_over_websocket   = true
   //
@@ -155,15 +155,8 @@ source "vmware-iso" "Win10_base" {
 build {
   sources = ["source.vmware-iso.Win10_base"]
   provisioner "powershell" {
-    only         = ["vmware-iso"]
     pause_before = "1m0s"
     scripts      = ["scripts/vmware-tools.ps1"]
-  }
-
-  provisioner "powershell" {
-    only         = ["virtualbox-iso"]
-    pause_before = "1m0s"
-    scripts      = ["scripts/virtualbox-guest-additions.ps1"]
   }
 
   provisioner "powershell" {
@@ -173,22 +166,22 @@ build {
   provisioner "windows-restart" {
     restart_timeout = "30m"
   }
-
-  provisioner "powershell" {
-    scripts = ["scripts/win-update.ps1"]
-  }
-
-  provisioner "windows-restart" {
-    restart_timeout = "30m"
-  }
-
-  provisioner "powershell" {
-    scripts = ["scripts/win-update.ps1"]
-  }
-
-  provisioner "windows-restart" {
-    restart_timeout = "30m"
-  }
+  ## commented out win update to speed up install process can update later if required. 
+  #provisioner "powershell" {
+  #  scripts = ["scripts/win-update.ps1"]
+  #}
+#
+  #provisioner "windows-restart" {
+  #  restart_timeout = "30m"
+  #}
+#
+  #provisioner "powershell" {
+  #  scripts = ["scripts/win-update.ps1"]
+  #}
+#
+  #provisioner "windows-restart" {
+  #  restart_timeout = "30m"
+  #}
 
   provisioner "powershell" {
     pause_before = "1m0s"

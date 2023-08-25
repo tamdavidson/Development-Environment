@@ -1,5 +1,6 @@
 // variable files
 *.tfvars 
 *.lock.hcl
-.terraform
-.tfstate
+*.terraform
+*.tfstate
+*.tfstate.backup
