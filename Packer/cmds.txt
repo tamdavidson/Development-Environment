@@ -1,0 +1,2 @@
+packer build -var-file=".\secrets.pkrvars.hcl" -var-file=".\variables.pkrvars.hcl" .\win10.pkr.hcl
+packer build -var-file=".\secrets.pkrvars.hcl" -var-file=".\variables.pkrvars.hcl" .\win2022.pkr.hcl

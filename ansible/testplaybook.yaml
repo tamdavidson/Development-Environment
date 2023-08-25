@@ -1,0 +1,9 @@
+---
+- hosts: localhost
+
+  tasks:
+-   name: build test network
+      community.general.terraform:
+        project_path: '..\Terraform'
+        variables_files: '..\Terraform\secrets.tfvars'
+        state: present

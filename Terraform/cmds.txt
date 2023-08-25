@@ -1,0 +1,5 @@
+terraform plan  -var-file=".\secrets.tfvars"
+terraform apply -var-file=".\secrets.tfvars" --auto-approve
+terraform destroy -var-file=".\secrets.tfvars" --auto-approve
+
+terraform output -json ipaddress | ConvertFrom-Json > ip.txt
